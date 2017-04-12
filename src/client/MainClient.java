@@ -1,18 +1,19 @@
 package client;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 public class MainClient extends JFrame{
 	JPanel p_center;
-	JPanel[] page=new JPanel[2];
+	JPanel[] page=new JPanel[1];
+	Client_chat chat;
 	
 	public MainClient(){
+		chat=new Client_chat(this);
 		p_center=new JPanel();
 		page[0]=new Client_login(this);
-		page[1]=new Client_chat(this);
 		
 		p_center.add(page[0]);
-		p_center.add(page[1]);
 		add(p_center);
 		
 		setSize(360,590);

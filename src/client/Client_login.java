@@ -43,7 +43,7 @@ public class Client_login extends JPanel implements ActionListener{
 		try {
 			socket=new Socket(ip, port);
 			
-			ct=new ClientThread(socket,(Client_chat)main.page[1]);
+			ct=new ClientThread(socket,main.chat);
 			ct.start();
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -56,7 +56,6 @@ public class Client_login extends JPanel implements ActionListener{
 
 	public void actionPerformed(ActionEvent e) {
 		connect();
-		setVisible(false);
-		main.page[1].setVisible(true);
+		main.chat.setVisible(true);//화면 교체
 	}
 }
