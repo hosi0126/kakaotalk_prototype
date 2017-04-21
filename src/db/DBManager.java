@@ -21,10 +21,8 @@ public class DBManager {
 			Class.forName(driver);
 			con=DriverManager.getConnection(url,user,pass);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -45,7 +43,6 @@ public class DBManager {
 			try {
 				con.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

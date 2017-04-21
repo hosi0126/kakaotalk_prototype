@@ -23,6 +23,10 @@ public class Server_chat extends Thread{
 	BufferedReader buffr;
 	BufferedWriter buffw;
 	Vector<ThreadManager> userThread=new Vector<ThreadManager>();
+
+	DataInputStream dis;
+	File file;
+	FileOutputStream fos;
 	
 	public Server_chat(Socket socket,Vector<ThreadManager> userThread) {
 		this.socket=socket;
@@ -41,9 +45,6 @@ public class Server_chat extends Thread{
 		//클라에서 받는 것
 		String msg=null;
 
-		DataInputStream dis =null;
-		File file=null;
-		FileOutputStream fos=null;
 		try {
 			msg=buffr.readLine();
 			//여기서 판단하기
@@ -56,30 +57,49 @@ public class Server_chat extends Thread{
 				send(str);
 			}
 			else if(type.equals("image")){
-				String size_s=(String)obj.get("content");//file size
-				int size=Integer.parseInt(size_s);
+				Thread thread=new Thread(){
+					public void run() {
+						String size_s=(String)obj.get("content");//file size
+						int size=Integer.parseInt(size_s);
 
-				dis = new DataInputStream (socket.getInputStream());
-				String str=dis.readUTF();
-				String path="C:/myserver/data/"+str;
-				file=new File(path);
-				fos=new FileOutputStream(file);
-				
-				int totalBytesRead = 0;
-				byte[] data = new byte[size];
+						try {
+							dis = new DataInputStream (socket.getInputStream());
+							String str=dis.readUTF();
+							String path="C:/myserver/data/"+str;
+							file=new File(path);
+							fos=new FileOutputStream(file);
+							
+							int totalBytesRead = 0;
+							byte[] data = new byte[size];
 
-				while (totalBytesRead < size) {
-				    int bytesRemaining = size - totalBytesRead;
-				    int bytesRead = dis.read(data, totalBytesRead, bytesRemaining);
-				    fos.write(data,totalBytesRead, bytesRemaining);
-				    fos.flush();
-				    if (bytesRead == -1) {
-				        return; // socket has been closed
-				    }
+							while (totalBytesRead < size) {
+							    int bytesRemaining = size - totalBytesRead;
+							    int bytesRead = dis.read(data, totalBytesRead, bytesRemaining);
+							    fos.write(data,totalBytesRead, bytesRemaining);
+							    fos.flush();
+							    if (bytesRead == -1) {
+							        return; // socket has been closed
+							    }
 
-				    totalBytesRead += bytesRead;
-				}
-				send(new File(path));
+							    totalBytesRead += bytesRead;
+							}
+							send(new File(path));
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}finally {
+						    try {
+						    	if(fos!=null){
+						    		fos.close();
+						    	}
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+				};
+				thread.start();
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -87,15 +107,6 @@ public class Server_chat extends Thread{
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally {
-		    try {
-		    	if(fos!=null){
-		    		fos.close();
-		    	}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 	
